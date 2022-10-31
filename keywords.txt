@@ -1,5 +1,5 @@
 #######################################
-# Syntax Coloring Map For thijsFIFO
+# Syntax Coloring Map For AS5600_thijs
 #######################################
 # Class (KEYWORD1)
 #######################################
@@ -24,9 +24,10 @@ loopReadWithCallback	KEYWORD2
 
 requestReadInt	KEYWORD2
 onlyReadInt		KEYWORD2
+writeInt		KEYWORD2
+
 getAngle		KEYWORD2
 getAltAngle		KEYWORD2
-writeInt		KEYWORD2
 
 setZPOS		KEYWORD2
 setMPOS		KEYWORD2
@@ -83,4 +84,5 @@ AS5600_AGC		LITERAL1
 AS5600_MAGNITUDE_H		LITERAL1
 AS5600_MAGNITUDE_L		LITERAL1
 AS5600_BURN		LITERAL1
+slaveAddress	LITERAL1
 keepLooping		LITERAL1

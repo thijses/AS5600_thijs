@@ -1,0 +1,21 @@
+{
+  "name": "AS5600_thijs",
+  "version": "1.1.0",
+  "description": "A slightly faster (lower level) AS5600 I2C library for atmega328p, ESP32, MSP430 or STM32 (or Wire.h)",
+  "keywords": "AS5600, I2C",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/thijses/AS5600_thijs.git"
+  },
+  "authors":
+  [
+    {
+      "name": "Thijs van Liempd",
+      "email": "tttthijses@gmail.com"
+    }
+  ],
+  "frameworks": "arduino",
+  "platforms": ["atmelavr", "espressif32", "timsp430", "ststm32"],
+  "headers": "AS5600_thijs.h"
+}
