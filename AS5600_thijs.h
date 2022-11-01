@@ -910,6 +910,9 @@ class AS5600_thijs
      * @return (i2c_status_e or bool) whether it read successfully
      */
     AS5600_ERR_RETURN_TYPE onlyReadBytes(uint8_t readBuff[], uint16_t bytesToRead) {
+      #if defined(I2C_OTHER_FRAME) // not on all STM32 variants
+        _i2c.handle.XferOptions = I2C_OTHER_AND_LAST_FRAME; // (this one i don't understand, but the Wire.h library does it, and without it i get HAL_I2C_ERROR_SIZE~~64 (-> I2C_ERROR~~4))
+      #endif
       i2c_status_e err = i2c_master_read(&_i2c, (slaveAddress << 1), readBuff, bytesToRead);
       if(err != I2C_OK) { AS5600debugPrint("onlyReadBytes() i2c_master_read error!"); }
       #ifdef AS5600_return_i2c_status_e
@@ -927,6 +930,7 @@ class AS5600_thijs
      * @return (i2c_status_e or bool) whether it wrote successfully
      */
     AS5600_ERR_RETURN_TYPE writeBytes(uint8_t registerToStartWrite, uint8_t writeBuff[], uint16_t bytesToWrite) {
+      //// NOTE: the code below is commented out because it concerns a potential optimization (repeated start instead of buffer copying), but it's untested! (and not really needed anyway)
       // #if defined(I2C_OTHER_FRAME) // if the STM32 subfamily is capable of writing without sending a stop
       //   _i2c.handle.XferOptions = I2C_OTHER_FRAME; // tell the peripheral it should NOT send a STOP at the end
       //   i2c_status_e err = i2c_master_write(&_i2c, (slaveAddress << 1), &registerToStartWrite, 1);
@@ -941,6 +945,7 @@ class AS5600_thijs
       //   _i2c.handle.XferOptions = I2C_OTHER_AND_LAST_FRAME; // tell the peripheral it should send a STOP at the end
       //   err = i2c_master_write(&_i2c, (slaveAddress << 1), writeBuff, bytesToWrite);
       // #else // if the STM32 subfamily can't handle repeated starts anyways, just do it the hard way:
+      //// if the code above is uncommented, be sure to remove this next part:
 
       #if defined(I2C_OTHER_FRAME) // if the STM32 subfamily is capable of writing without sending a stop
         _i2c.handle.XferOptions = I2C_OTHER_AND_LAST_FRAME; // tell the peripheral it should send a STOP at the end
@@ -950,7 +955,7 @@ class AS5600_thijs
         for(uint8_t i=0;i<bytesToWrite; i++) { bufferCopyWithReg[i+1] = writeBuff[i]; } // manually copy all bytes
         i2c_status_e err = i2c_master_write(&_i2c, (slaveAddress << 1), bufferCopyWithReg, bytesToWrite+1);
 
-      // #endif
+      // #endif // related to the commented optimization code above
 
       if(err != I2C_OK) { AS5600debugPrint("writeBytes() i2c_master_write error!"); }
       #ifdef AS5600_return_i2c_status_e
