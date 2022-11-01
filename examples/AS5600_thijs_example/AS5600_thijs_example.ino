@@ -28,13 +28,13 @@ AS5600_thijs sensor;
   const uint8_t TMP112_SCLpin = 22; // 'defualt' is 22 (but this is just pin someone on the internet decided, i think the Wire library uses it)
 #endif
 #ifdef ARDUINO_ARCH_STM32   // on the STM32, each I2C peripheral has several pin options
-  const uint8_t TMP112_SDApin = SDA; // default pin, on the STM32WB55 (nucleo_wb55rg_p) that's pin PB_9
-  const uint8_t TMP112_SCLpin = SCL; // default pin, on the STM32WB55 (nucleo_wb55rg_p) that's pin PB_8
+  const uint8_t TMP112_SDApin = SDA; // default pin, on the STM32WB55 (nucleo_wb55rg_p) that's pin PB9
+  const uint8_t TMP112_SCLpin = SCL; // default pin, on the STM32WB55 (nucleo_wb55rg_p) that's pin PB8
   /* Here is a handy little table of I2C pins on the STM32WB55 (nucleo_wb55rg_p):
-      I2C1: SDA: PA_10, PB_7, PB_9
-            SCL: PA_9, PB_6, PB_8
-      I2C3: SDA: PB_4, PB_11, PB_14, PC_1
-            SCL: PA_7 PB_10, PB_13, PC_0      */
+      I2C1: SDA: PA10, PB7, PB9
+            SCL: PA9, PB6, PB8
+      I2C3: SDA: PB4, PB11, PB14, PC1
+            SCL: PA7 PB10, PB13, PC0      */
 #endif
 
 
