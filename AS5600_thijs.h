@@ -838,6 +838,12 @@ class AS5600_thijs
      which does have the advantage of working with the whole STM32 family (whereas a lower implementation would target specific subfamilies)
     The STM32 can map the I2C pins to a limited (but at least more than one) selection of pins,
      see PeripheralPins.c for the PinMap_I2C_SDA and PinMap_I2C_SCL (or just look at the datasheet)
+     (for my purposes, that's: .platformio\packages\framework-arduinoststm32\variants\STM32WBxx\WB55R(C-E-G)V\PeripheralPins.c )
+     Here is a handy little table:
+      I2C1: SDA: PA10, PB7, PB9
+            SCL: PA9, PB6, PB8
+      I2C3: SDA: PB4, PB11, PB14, PC1
+            SCL: PA7 PB10, PB13, PC0
     
     */
 

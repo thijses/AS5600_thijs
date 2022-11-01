@@ -24,12 +24,17 @@ This sketch showcases most of the functions and how long they take to execute.
 AS5600_thijs sensor;
 
 #ifdef ARDUINO_ARCH_ESP32  // on the ESP32, almost any pin can become an I2C pin
-  const uint8_t AS5600_SDApin = 26; // 'defualt' is 21 (but this is just some random value Arduino decided.)
-  const uint8_t AS5600_SCLpin = 27; // 'defualt' is 22 
+  const uint8_t TMP112_SDApin = 21; // 'defualt' is 21 (but this is just pin someone on the internet decided, i think the Wire library uses it)
+  const uint8_t TMP112_SCLpin = 22; // 'defualt' is 22 (but this is just pin someone on the internet decided, i think the Wire library uses it)
 #endif
 #ifdef ARDUINO_ARCH_STM32   // on the STM32, each I2C peripheral has several pin options
-  const uint8_t AS5600_SDApin = SDA;
-  const uint8_t AS5600_SCLpin = SCL;
+  const uint8_t TMP112_SDApin = SDA; // default pin, on the STM32WB55 (nucleo_wb55rg_p) that's pin PB_9
+  const uint8_t TMP112_SCLpin = SCL; // default pin, on the STM32WB55 (nucleo_wb55rg_p) that's pin PB_8
+  /* Here is a handy little table of I2C pins on the STM32WB55 (nucleo_wb55rg_p):
+      I2C1: SDA: PA_10, PB_7, PB_9
+            SCL: PA_9, PB_6, PB_8
+      I2C3: SDA: PB_4, PB_11, PB_14, PC_1
+            SCL: PA_7 PB_10, PB_13, PC_0      */
 #endif
 
 
