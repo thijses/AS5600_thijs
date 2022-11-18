@@ -105,6 +105,21 @@ class AS5600_thijs : public _AS5600_thijs_base
   */
   //// the following functions are abstract enough that they'll work for either architecture
   
+  /**
+   * (just a macro) check whether an AS5600_ERR_RETURN_TYPE (which may be one of several different types) is fine or not 
+   * @param err (bool or esp_err_t or i2c_status_e, see on defines at top)
+   * @return whether the error is fine
+   */
+  bool _errGood(AS5600_ERR_RETURN_TYPE err) {
+    #if defined(AS5600_return_esp_err_t)
+      return(err == ESP_OK);
+    #elif defined(AS5600_return_i2c_status_e)
+      return(err == I2C_OK);
+    #else
+      return(err);
+    #endif
+  }
+  
   uint16_t requestReadInt(uint8_t registerToStartRead) { //note: by int i mean 12bit unsigned
     uint8_t readBuff[2]; //im secretly hoping the compiler will understand what i'm trying to do here and make it as efficient as possible, but probably...
     requestReadBytes(registerToStartRead, readBuff, 2);
@@ -213,26 +228,14 @@ class AS5600_thijs : public _AS5600_thijs_base
   bool connectionCheck() { // there is no good value to test with the AS5600, but we can test if a read fails (by the ACKs and stuff)
     uint8_t readBuff;
     AS5600_ERR_RETURN_TYPE readSuccess = requestReadBytes(AS5600_STATUS, &readBuff, 1);
-    #if defined(AS5600_return_esp_err_t)
-      return(readSuccess == ESP_OK);
-    #elif defined(AS5600_return_i2c_status_e)
-      return(readSuccess == I2C_OK);
-    #else
-      return(readSuccess);
-    #endif
+    return(_errGood(readSuccess));
   }
 
   void printConfig() {
     uint8_t readBuff[9];
     AS5600_ERR_RETURN_TYPE readSuccess = requestReadBytes(AS5600_ZMCO, readBuff, 9);
-    #if defined(AS5600_return_esp_err_t)
-      if(readSuccess == ESP_OK)
-    #elif defined(AS5600_return_i2c_status_e)
-      if(readSuccess == I2C_OK)
-    #else
-      if(!readSuccess)
-    #endif
-     {
+    if(_errGood(readSuccess))
+    {
       //Serial.println("printing config:");
       Serial.print("burn count (ZMCO): "); Serial.println(readBuff[0] & AS5600_ZMCO_bits);
       uint16_t bigVal = ((readBuff[1] & LSB_NIBBLE) << 8) | readBuff[2];
