@@ -24,9 +24,10 @@ writeBytes		KEYWORD2
 writeSameValue	KEYWORD2
 loopReadWithCallback	KEYWORD2
 
+_errGood			KEYWORD2
 requestReadInt	KEYWORD2
 onlyReadInt		KEYWORD2
-writeInt		KEYWORD2
+writeInt			KEYWORD2
 
 getAngle		KEYWORD2
 getAltAngle		KEYWORD2
