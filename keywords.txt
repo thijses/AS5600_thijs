@@ -10,9 +10,11 @@ AS5600_thijs	KEYWORD1
 # Methods and Functions (KEYWORD2)
 #######################################	
 
-AS5600_unlock_burning	KEYWORD2
-AS5600_return_esp_err	KEYWORD2
 AS5600debugPrint	KEYWORD2
+AS5600_unlock_burning	KEYWORD2
+AS5600_ERR_RETURN_TYPE	KEYWORD2
+AS5600_return_esp_err_t	KEYWORD2
+AS5600_return_i2c_status_e	KEYWORD2
 
 init			KEYWORD2
 requestReadBytes	KEYWORD2
@@ -58,6 +60,7 @@ magnetDetected		KEYWORD2
 magnetTooWeak		KEYWORD2
 magnetTooStrong		KEYWORD2
 
+connectionCheck		KEYWORD2
 printConfig		KEYWORD2
 printStatus		KEYWORD2
 resetConfig		KEYWORD2

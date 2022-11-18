@@ -34,7 +34,7 @@ AS5600_thijs sensor;
       I2C1: SDA: PA10, PB7, PB9
             SCL: PA9, PB6, PB8
       I2C3: SDA: PB4, PB11, PB14, PC1
-            SCL: PA7 PB10, PB13, PC0      */
+            SCL: PA7, PB10, PB13, PC0      */
 #endif
 
 
