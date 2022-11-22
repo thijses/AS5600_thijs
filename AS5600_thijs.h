@@ -11,10 +11,12 @@ add library.json (platformIO)
 
 
 still TODO:
-test Wire lib support
-test MSP430 support
-test STM32 support  (also, check writeBytes repeated start thingy (commented))
-add function descriptions
+- test Wire lib support
+- test MSP430 support
+- test STM32 support  (also, check writeBytes repeated start thingy (commented))
+- add function descriptions
+- check Wire.h function return values for I2C errors
+- test if 'static' vars in the ESP32 functions actually are static (connect 2 sensors?)
 
 */
 

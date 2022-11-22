@@ -5,16 +5,23 @@
 #######################################
 
 AS5600_thijs	KEYWORD1
+_AS5600_thijs_base	KEYWORD1
+
+AS5600_ERR_RETURN_TYPE	KEYWORD2
+AS5600_ERR_RETURN_TYPE_default	KEYWORD2
+
+#######################################
+# Class properties (LITERAL1)
+#######################################
+
+slaveAddress	LITERAL1
+keepLooping		LITERAL1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################	
 
 AS5600debugPrint	KEYWORD2
-AS5600_unlock_burning	KEYWORD2
-AS5600_ERR_RETURN_TYPE	KEYWORD2
-AS5600_return_esp_err_t	KEYWORD2
-AS5600_return_i2c_status_e	KEYWORD2
 
 init			KEYWORD2
 requestReadBytes	KEYWORD2
@@ -70,6 +77,10 @@ resetConfig		KEYWORD2
 # Constants (LITERAL1)
 #######################################
 
+AS5600_unlock_burning	LITERAL1
+AS5600_return_esp_err_t		LITERAL1
+AS5600_return_i2c_status_e	LITERAL1
+
 AS5600_ZMCO		LITERAL1
 AS5600_ZPOS_H		LITERAL1
 AS5600_ZPOS_L		LITERAL1
@@ -88,5 +99,3 @@ AS5600_AGC		LITERAL1
 AS5600_MAGNITUDE_H		LITERAL1
 AS5600_MAGNITUDE_L		LITERAL1
 AS5600_BURN		LITERAL1
-slaveAddress	LITERAL1
-keepLooping		LITERAL1
