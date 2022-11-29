@@ -11,12 +11,14 @@ add library.json (platformIO)
 
 
 still TODO:
+- remove .writeSameValue (i can live with it being slightly memory-inefficient, if it means fewer platform-specific functions)
 - test Wire lib support
 - test MSP430 support
 - test STM32 support  (also, check writeBytes repeated start thingy (commented))
 - add function descriptions
 - check Wire.h function return values for I2C errors
 - test if 'static' vars in the ESP32 functions actually are static (connect 2 sensors?)
+- generalized memory map struct (also for other libraries). Could just be an enum, i just don't love #define
 
 */
 
