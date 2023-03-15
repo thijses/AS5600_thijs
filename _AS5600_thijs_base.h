@@ -782,7 +782,7 @@ class _AS5600_thijs_base
 
     public:
 
-    i2c_t _i2c; // handler thingy (presumably)
+    i2c_t* _i2c; // handler thingy (presumably)
     static const uint8_t STM32_MASTER_ADDRESS = 0x01; // a reserved address which tells the peripheral it's a master, not a slave
     
     /**
@@ -792,15 +792,23 @@ class _AS5600_thijs_base
      * @param SCLpin pin (arduino naming) to use as SCL (select few possible)
      * @param generalCall i'm honestly not sure, the STM32 twi library is not documented very well...
      */
-    void init(uint32_t frequency, uint32_t SDApin=PIN_WIRE_SDA, uint32_t SCLpin=PIN_WIRE_SCL, bool generalCall = false) {
-      _i2c.sda = digitalPinToPinName(SDApin);
-      _i2c.scl = digitalPinToPinName(SCLpin);
-      _i2c.__this = (void *)this; // i truly do not understand the stucture of the STM32 i2c_t, but whatever, i guess the i2c_t class needs to know where this higher level class is or something
-      _i2c.isMaster = true;
-      _i2c.generalCall = (generalCall == true) ? 1 : 0; // 'generalCall' is just a uint8_t instead of a bool
-      i2c_custom_init(&_i2c, frequency, I2C_ADDRESSINGMODE_7BIT, (STM32_MASTER_ADDRESS << 1));
-      // note: use i2c_setTiming(&_i2c, frequency) if you want to change the frequency later
+    i2c_t* init(uint32_t frequency, uint32_t SDApin=PIN_WIRE_SDA, uint32_t SCLpin=PIN_WIRE_SCL, bool generalCall = false) {
+      _i2c = new i2c_t;
+      _i2c->sda = digitalPinToPinName(SDApin);
+      _i2c->scl = digitalPinToPinName(SCLpin);
+      _i2c->__this = (void *)this; // i truly do not understand the stucture of the STM32 i2c_t, but whatever, i guess the i2c_t class needs to know where this higher level class is or something
+      _i2c->isMaster = true;
+      _i2c->generalCall = (generalCall == true) ? 1 : 0; // 'generalCall' is just a uint8_t instead of a bool
+      i2c_custom_init(_i2c, frequency, I2C_ADDRESSINGMODE_7BIT, (STM32_MASTER_ADDRESS << 1));
+      // note: use i2c_setTiming(_i2c, frequency) if you want to change the frequency later
+      return(_i2c);
     }
+
+    /**
+     * initialize I2C peripheral on STM32 (NOTE: use this if the I2C bus was already initialized!)
+     * @param i2c_t_Ptr (pointer to) an i2c_t object (already initialized)
+    */
+    void init(i2c_t* i2c_t_Ptr) { _i2c = i2c_t_Ptr; } // use the pre-initialized i2c_t object
 
     /**
      * request a specific register and read 1 byte
@@ -828,9 +836,9 @@ class _AS5600_thijs_base
      */
     AS5600_ERR_RETURN_TYPE requestReadBytes(uint8_t registerToRead, uint8_t readBuff[], uint8_t bytesToRead) {
       #if defined(I2C_OTHER_FRAME) // if the STM32 subfamily is capable of writing without sending a stop
-        _i2c.handle.XferOptions = I2C_OTHER_AND_LAST_FRAME; // tell the peripheral it should send a STOP at the end
+        _i2c->handle.XferOptions = I2C_OTHER_AND_LAST_FRAME; // tell the peripheral it should send a STOP at the end
       #endif
-      i2c_status_e err = i2c_master_write(&_i2c, (slaveAddress << 1), &registerToRead, 1);
+      i2c_status_e err = i2c_master_write(_i2c, (slaveAddress << 1), &registerToRead, 1);
       if(err != I2C_OK) {
         AS5600debugPrint("requestReadBytes() i2c_master_write error!");
         #ifdef AS5600_return_i2c_status_e
@@ -850,9 +858,9 @@ class _AS5600_thijs_base
      */
     AS5600_ERR_RETURN_TYPE onlyReadBytes(uint8_t readBuff[], uint8_t bytesToRead) {
       #if defined(I2C_OTHER_FRAME) // not on all STM32 variants
-        _i2c.handle.XferOptions = I2C_OTHER_AND_LAST_FRAME; // (this one i don't understand, but the Wire.h library does it, and without it i get HAL_I2C_ERROR_SIZE~~64 (-> I2C_ERROR~~4))
+        _i2c->handle.XferOptions = I2C_OTHER_AND_LAST_FRAME; // (this one i don't understand, but the Wire.h library does it, and without it i get HAL_I2C_ERROR_SIZE~~64 (-> I2C_ERROR~~4))
       #endif
-      i2c_status_e err = i2c_master_read(&_i2c, (slaveAddress << 1), readBuff, bytesToRead);
+      i2c_status_e err = i2c_master_read(_i2c, (slaveAddress << 1), readBuff, bytesToRead);
       if(err != I2C_OK) { AS5600debugPrint("onlyReadBytes() i2c_master_read error!"); }
       #ifdef AS5600_return_i2c_status_e
         return(err);
@@ -871,8 +879,8 @@ class _AS5600_thijs_base
     AS5600_ERR_RETURN_TYPE writeBytes(uint8_t registerToStartWrite, uint8_t writeBuff[], uint8_t bytesToWrite) {
       //// NOTE: the code below is commented out because it concerns a potential optimization (repeated start instead of buffer copying), but it's untested! (and not really needed anyway)
       // #if defined(I2C_OTHER_FRAME) // if the STM32 subfamily is capable of writing without sending a stop
-      //   _i2c.handle.XferOptions = I2C_OTHER_FRAME; // tell the peripheral it should NOT send a STOP at the end
-      //   i2c_status_e err = i2c_master_write(&_i2c, (slaveAddress << 1), &registerToStartWrite, 1);
+      //   _i2c->handle.XferOptions = I2C_OTHER_FRAME; // tell the peripheral it should NOT send a STOP at the end
+      //   i2c_status_e err = i2c_master_write(_i2c, (slaveAddress << 1), &registerToStartWrite, 1);
       //   if(err != I2C_OK) {
       //     AS5600debugPrint("requestReadBytes() first i2c_master_write error!");
       //     #ifdef AS5600_return_i2c_status_e
@@ -881,18 +889,18 @@ class _AS5600_thijs_base
       //       return(false);
       //     #endif
       //   }
-      //   _i2c.handle.XferOptions = I2C_OTHER_AND_LAST_FRAME; // tell the peripheral it should send a STOP at the end
-      //   err = i2c_master_write(&_i2c, (slaveAddress << 1), writeBuff, bytesToWrite);
+      //   _i2c->handle.XferOptions = I2C_OTHER_AND_LAST_FRAME; // tell the peripheral it should send a STOP at the end
+      //   err = i2c_master_write(_i2c, (slaveAddress << 1), writeBuff, bytesToWrite);
       // #else // if the STM32 subfamily can't handle repeated starts anyways, just do it the hard way:
       //// if the code above is uncommented, be sure to remove this next part:
 
       #if defined(I2C_OTHER_FRAME) // if the STM32 subfamily is capable of writing without sending a stop
-        _i2c.handle.XferOptions = I2C_OTHER_AND_LAST_FRAME; // tell the peripheral it should send a STOP at the end
+        _i2c->handle.XferOptions = I2C_OTHER_AND_LAST_FRAME; // tell the peripheral it should send a STOP at the end
       #endif
 
         uint8_t bufferCopyWithReg[bytesToWrite+1];   bufferCopyWithReg[0] = registerToStartWrite;
         for(uint8_t i=0;i<bytesToWrite; i++) { bufferCopyWithReg[i+1] = writeBuff[i]; } // manually copy all bytes
-        i2c_status_e err = i2c_master_write(&_i2c, (slaveAddress << 1), bufferCopyWithReg, bytesToWrite+1);
+        i2c_status_e err = i2c_master_write(_i2c, (slaveAddress << 1), bufferCopyWithReg, bytesToWrite+1);
 
       // #endif // related to the commented optimization code above
 
@@ -918,9 +926,9 @@ class _AS5600_thijs_base
       //// alt:
       // uint8_t singleValueArray[bytesToWrite+1]; singleValueArray[0]=registerToStartWrite; for(uint8_t i=0;i<bytesToWrite;i++) { singleValueArray[i+1]=valueToWrite; }
       // #if defined(I2C_OTHER_FRAME) // if the STM32 subfamily is capable of writing without sending a stop
-      //   _i2c.handle.XferOptions = I2C_OTHER_AND_LAST_FRAME; // tell the peripheral it should send a STOP at the end
+      //   _i2c->handle.XferOptions = I2C_OTHER_AND_LAST_FRAME; // tell the peripheral it should send a STOP at the end
       // #endif
-      // i2c_status_e err = i2c_master_write(&_i2c, (slaveAddress << 1), singleValueArray, bytesToWrite+1);
+      // i2c_status_e err = i2c_master_write(_i2c, (slaveAddress << 1), singleValueArray, bytesToWrite+1);
       // if(err != I2C_OK) { AS5600debugPrint("writeBytes() i2c_master_write error!"); }
       // #ifdef AS5600_return_i2c_status_e
       //   return(err);
