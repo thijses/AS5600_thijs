@@ -490,7 +490,7 @@ class _AS5600_thijs_base
      * @param pullEnable whether or not to enable internal pullups
      * @return (esp_err_t) whether it was able to establish the peripheral
      */
-    esp_err_t init(uint32_t frequency, int SDApin = 21, int SCLpin = 22, i2c_port_t I2CportToUse = 0, gpio_pullup_t pullEnable = GPIO_PULLUP_ENABLE) {
+    esp_err_t init(uint32_t frequency, int SDApin = 21, int SCLpin = 22, i2c_port_t I2CportToUse=I2C_NUM_0, gpio_pullup_t pullEnable = GPIO_PULLUP_ENABLE) {
       if(I2CportToUse < I2C_NUM_MAX) { I2Cport = I2CportToUse; } else { AS5600debugPrint("can't init(), invalid I2Cport!"); return(ESP_ERR_INVALID_ARG); }
       i2c_config_t conf;
       conf.mode = I2C_MODE_MASTER;
